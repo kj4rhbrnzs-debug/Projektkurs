@@ -76,8 +76,8 @@
   </main>
 
   <script>
-    const SPIN_DURATIONS = [3100, 3900, 4800];
-    const symbols = [
+    let SPIN_DURATIONS = [3100, 3900, 4800];
+    let symbols = [
       "slot_assets/sym_0.png",
       "slot_assets/sym_1.png",
       "slot_assets/sym_2.png",
@@ -129,6 +129,16 @@
     }
 
     async function loadState() {
+      try {
+        const config = await fetchJson("/api/config");
+        if (Array.isArray(config.spin_durations_ms) && config.spin_durations_ms.length === 3) {
+          SPIN_DURATIONS = config.spin_durations_ms;
+        }
+        if (Array.isArray(config.symbols) && config.symbols.length > 0) {
+          symbols = config.symbols;
+        }
+      } catch (_) {}
+
       const data = await fetchJson("/api/state");
       state = { credits: data.credits, best: data.best };
       render("", false);

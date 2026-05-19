@@ -10,6 +10,7 @@ START_CREDITS = 10
 CREDIT_PER_COIN = 1
 WIN_REWARD = 4
 WIN_CHANCE = 0.20
+SPIN_DURATIONS = [3.1, 3.9, 4.8]
 
 BASE_DIR = Path(__file__).resolve().parent
 SESSION_COOKIE = "slot_session"
@@ -18,6 +19,9 @@ app = Flask(__name__, static_folder=str(BASE_DIR), static_url_path="")
 
 sessions = {}
 sessions_lock = threading.Lock()
+SYMBOL_FILES = sorted((BASE_DIR / "slot_assets").glob("*.png"))
+if not SYMBOL_FILES:
+    SYMBOL_FILES = sorted((BASE_DIR / "slot_assets").glob("*"))
 
 
 def get_or_create_session_id():
@@ -57,6 +61,20 @@ def api_state():
     return resp
 
 
+@app.get("/api/config")
+def api_config():
+    return jsonify(
+        {
+            "start_credits": START_CREDITS,
+            "credit_per_coin": CREDIT_PER_COIN,
+            "win_reward": WIN_REWARD,
+            "win_chance": WIN_CHANCE,
+            "spin_durations_ms": [int(v * 1000) for v in SPIN_DURATIONS],
+            "symbols": [f"slot_assets/{p.name}" for p in SYMBOL_FILES],
+        }
+    )
+
+
 @app.post("/api/coin")
 def api_coin():
     sid = get_or_create_session_id()
@@ -91,7 +109,7 @@ def api_spin():
             return resp
 
         state["credits"] -= 1
-        choices = [0, 1, 2, 3, 4]
+        choices = list(range(len(SYMBOL_FILES)))
         final_reels = random.choices(choices, k=3)
 
         if random.random() < WIN_CHANCE:
