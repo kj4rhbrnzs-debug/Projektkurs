@@ -146,6 +146,7 @@
 
     async function spin() {
       if (spinning) return;
+      const preSpinState = { ...state };
       spinning = true;
       leverBtn.disabled = true;
 
@@ -164,7 +165,10 @@
         return;
       }
 
-      state = { credits: result.credits, best: result.best };
+      state = {
+        credits: Math.max(0, preSpinState.credits - 1),
+        best: preSpinState.best
+      };
       render("", false);
 
       const start = performance.now();
@@ -202,6 +206,7 @@
       await sleep(500);
 
       if (result.won) {
+        state = { credits: result.credits, best: result.best };
         render(" GEWONNEN! ", true);
         if (winBlinkTimer) clearInterval(winBlinkTimer);
         winBlinkTimer = setInterval(() => {
@@ -211,6 +216,9 @@
         clearInterval(winBlinkTimer);
         winBlinkTimer = null;
         msgEl.style.visibility = "visible";
+        render("", false);
+      } else {
+        state = { credits: result.credits, best: result.best };
         render("", false);
       }
 
