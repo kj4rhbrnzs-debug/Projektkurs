@@ -1,0 +1,14 @@
+[Unit]
+Description=Slotmaschine Game
+After=network.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/slotmaschine
+ExecStart=/usr/bin/python3 /home/pi/slotmaschine/slotmaschine.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=graphical.target

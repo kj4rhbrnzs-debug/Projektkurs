@@ -1,0 +1,14 @@
+So koennen alle auf dem Handy spielen (gleiches WLAN):
+
+1) Im Projektordner starten:
+   python3 -m http.server 8000
+
+2) Auf deinem Rechner die lokale IP anzeigen:
+   ifconfig | grep "inet "
+   (Nimm die IP deines WLAN-Adapters, z.B. 192.168.178.42)
+
+3) Auf dem Handy im Browser aufrufen:
+   http://DEINE-IP:8000/mobile_slot.html
+
+Beispiel:
+http://192.168.178.42:8000/mobile_slot.html

@@ -1,0 +1,22 @@
+Online stellen mit GitHub Pages (einmalig, ca. 3 Minuten):
+
+1) Repo auf GitHub pushen (falls noch nicht):
+   git init
+   git add .
+   git commit -m "mobile web version"
+   git branch -M main
+   git remote add origin https://github.com/DEIN-NAME/DEIN-REPO.git
+   git push -u origin main
+
+2) Auf GitHub im Repo:
+   Settings -> Pages
+   Source: Deploy from a branch
+   Branch: main / (root)
+   Save
+
+3) Danach ist das Spiel unter dieser URL erreichbar:
+   https://DEIN-NAME.github.io/DEIN-REPO/
+
+Wichtig:
+- Die Seite nutzt index.html als Startseite (ist bereits vorbereitet).
+- Änderungen später einfach committen + pushen.
