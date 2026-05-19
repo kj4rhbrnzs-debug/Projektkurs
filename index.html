@@ -3,123 +3,124 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Slotmaschine Mobile</title>
+  <title>Projektkurs Slotmaschine</title>
   <style>
     :root {
-      --bg1: #08101f;
-      --bg2: #2e1644;
-      --panel: #111b33;
-      --accent: #6dc8ff;
-      --win: #8aff8d;
+      --bg1: #071324;
+      --bg2: #2f1d46;
+      --panel: rgba(14, 23, 44, 0.88);
+      --line: #6ea8ea;
       --text: #e8f1ff;
+      --muted: #9bb7db;
+      --ok: #8dff9a;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       min-height: 100dvh;
-      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
       color: var(--text);
-      background: radial-gradient(circle at 15% 20%, #1d4570 0%, transparent 35%),
-                  radial-gradient(circle at 85% 85%, #4e2f7c 0%, transparent 40%),
-                  linear-gradient(180deg, var(--bg1), var(--bg2));
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 12% 18%, #214f7e 0, transparent 35%),
+        radial-gradient(circle at 88% 86%, #553788 0, transparent 40%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
       display: grid;
       place-items: center;
       padding: 16px;
     }
     .app {
-      width: min(520px, 100%);
-      background: rgba(17, 27, 51, 0.86);
-      border: 2px solid #528cd4;
+      width: min(560px, 100%);
+      border: 2px solid var(--line);
       border-radius: 18px;
+      background: var(--panel);
+      box-shadow: 0 16px 36px rgba(0,0,0,0.45);
       padding: 16px;
-      box-shadow: 0 12px 36px rgba(0,0,0,0.45);
     }
-    h1 { margin: 0 0 12px; text-align: center; letter-spacing: 0.06em; }
+    h1 {
+      margin: 0 0 10px;
+      text-align: center;
+      letter-spacing: .08em;
+      font-size: clamp(20px, 5vw, 34px);
+    }
     .stats {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       font-weight: 700;
+      color: #d7e6ff;
+      font-size: clamp(15px, 3.8vw, 20px);
     }
     .reels {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 10px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
     .reel {
-      background: #0a1123;
-      border: 2px solid #73a7eb;
+      border: 2px solid #83b7f3;
       border-radius: 12px;
+      background: #0a1021;
       aspect-ratio: 1;
       display: grid;
       place-items: center;
-      font-size: clamp(44px, 12vw, 70px);
+      font-size: clamp(44px, 12vw, 74px);
       user-select: none;
     }
     .msg {
-      min-height: 28px;
+      min-height: 30px;
       text-align: center;
       font-weight: 700;
+      color: var(--muted);
       margin-bottom: 12px;
-      color: #b9d7ff;
     }
-    .msg.win { color: var(--win); }
+    .msg.win { color: var(--ok); }
     .controls {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
       gap: 10px;
+      grid-template-columns: repeat(3, 1fr);
     }
     button {
       border: 0;
       border-radius: 12px;
       padding: 12px 8px;
-      font-size: 16px;
+      font-size: clamp(14px, 3.3vw, 18px);
       font-weight: 700;
-      color: #041021;
-      background: linear-gradient(180deg, #a7ddff, #59b5f4);
       touch-action: manipulation;
     }
-    button:active { transform: translateY(1px) scale(0.995); }
-    .lever {
-      color: #102300;
-      background: linear-gradient(180deg, #e6ff9a, #9fda39);
-    }
-    .reset {
-      color: #2b0707;
-      background: linear-gradient(180deg, #ffb2b2, #ef6d6d);
-    }
+    .coin { background: linear-gradient(180deg, #bde4ff, #67bbf4); color: #0b2038; }
+    .lever { background: linear-gradient(180deg, #e9ffae, #a7db45); color: #203100; }
+    .reset { background: linear-gradient(180deg, #ffc7c7, #ef7f7f); color: #3c0b0b; }
     .hint {
-      margin-top: 12px;
-      font-size: 13px;
-      opacity: 0.85;
+      margin: 12px 0 0;
       text-align: center;
+      color: #b7cae5;
+      font-size: 13px;
     }
   </style>
 </head>
 <body>
   <main class="app">
-    <h1>SLOTMASCHINE</h1>
+    <h1>PROJEKTKURS SLOTMASCHINE</h1>
     <section class="stats">
       <div>Credits: <span id="credits">10</span></div>
       <div>Best: <span id="best">10</span></div>
     </section>
 
     <section class="reels" aria-label="Walzen">
-      <div class="reel" id="r0">🍒</div>
-      <div class="reel" id="r1">🍋</div>
-      <div class="reel" id="r2">⭐</div>
+      <div id="r0" class="reel">🍒</div>
+      <div id="r1" class="reel">🍋</div>
+      <div id="r2" class="reel">⭐</div>
     </section>
 
     <div id="msg" class="msg">Viel Erfolg!</div>
 
     <section class="controls">
-      <button id="coin">Coin +1</button>
-      <button id="lever" class="lever">Hebel drehen</button>
+      <button id="coin" class="coin">Coin +1</button>
+      <button id="lever" class="lever">Hebel</button>
       <button id="reset" class="reset">Reset</button>
     </section>
 
-    <p class="hint">Tipp: Auf demselben WLAN kann jeder die Seite über deinen Rechner öffnen.</p>
+    <p class="hint">Laeuft auf Handy, Tablet und Laptop direkt im Browser.</p>
   </main>
 
   <script>
@@ -128,22 +129,19 @@
     const WIN_CHANCE = 0.20;
     const symbols = ["🍒", "🍋", "🍊", "🍇", "⭐", "🔔"];
 
-    const elCredits = document.getElementById("credits");
-    const elBest = document.getElementById("best");
-    const elMsg = document.getElementById("msg");
-    const reelEls = [0,1,2].map(i => document.getElementById(`r${i}`));
-    const btnCoin = document.getElementById("coin");
-    const btnLever = document.getElementById("lever");
-    const btnReset = document.getElementById("reset");
+    const creditsEl = document.getElementById("credits");
+    const bestEl = document.getElementById("best");
+    const msgEl = document.getElementById("msg");
+    const reels = [0, 1, 2].map(i => document.getElementById(`r${i}`));
 
-    let state = loadState();
     let spinning = false;
+    let state = loadState();
 
     function loadState() {
       try {
-        const saved = JSON.parse(localStorage.getItem("slot-mobile-state") || "{}");
-        const credits = Number.isFinite(saved.credits) ? saved.credits : START_CREDITS;
-        const best = Number.isFinite(saved.best) ? saved.best : Math.max(START_CREDITS, credits);
+        const data = JSON.parse(localStorage.getItem("projektkurs-slot-v1") || "{}");
+        const credits = Number.isFinite(data.credits) ? data.credits : START_CREDITS;
+        const best = Number.isFinite(data.best) ? data.best : Math.max(START_CREDITS, credits);
         return { credits, best };
       } catch {
         return { credits: START_CREDITS, best: START_CREDITS };
@@ -151,24 +149,28 @@
     }
 
     function saveState() {
-      localStorage.setItem("slot-mobile-state", JSON.stringify(state));
+      localStorage.setItem("projektkurs-slot-v1", JSON.stringify(state));
     }
 
-    function render(msg = "", win = false) {
-      elCredits.textContent = state.credits;
-      elBest.textContent = state.best;
-      elMsg.textContent = msg || "Viel Erfolg!";
-      elMsg.className = win ? "msg win" : "msg";
+    function render(message = "Viel Erfolg!", won = false) {
+      creditsEl.textContent = state.credits;
+      bestEl.textContent = state.best;
+      msgEl.textContent = message;
+      msgEl.className = won ? "msg win" : "msg";
     }
 
-    function randIdx() {
+    function randomIndex() {
       return Math.floor(Math.random() * symbols.length);
     }
 
     function setReels(a, b, c) {
-      reelEls[0].textContent = symbols[a];
-      reelEls[1].textContent = symbols[b];
-      reelEls[2].textContent = symbols[c];
+      reels[0].textContent = symbols[a];
+      reels[1].textContent = symbols[b];
+      reels[2].textContent = symbols[c];
+    }
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
     }
 
     async function spin() {
@@ -177,21 +179,26 @@
         render("Keine Credits", false);
         return;
       }
+
       spinning = true;
-      btnLever.disabled = true;
+      document.getElementById("lever").disabled = true;
       state.credits -= 1;
       saveState();
       render("Dreht...", false);
 
-      for (let t = 0; t < 18; t++) {
-        setReels(randIdx(), randIdx(), randIdx());
-        await new Promise(r => setTimeout(r, 70 + t * 3));
+      for (let i = 0; i < 18; i++) {
+        setReels(randomIndex(), randomIndex(), randomIndex());
+        await sleep(70 + i * 3);
       }
 
-      let a = randIdx(), b = randIdx(), c = randIdx();
+      let a = randomIndex();
+      let b = randomIndex();
+      let c = randomIndex();
+
       if (Math.random() < WIN_CHANCE) {
-        a = b = c = randIdx();
+        a = b = c = randomIndex();
       }
+
       setReels(a, b, c);
 
       if (a === b && b === c) {
@@ -204,24 +211,24 @@
         render("Leider knapp daneben", false);
       }
 
-      btnLever.disabled = false;
+      document.getElementById("lever").disabled = false;
       spinning = false;
     }
 
-    btnCoin.addEventListener("click", () => {
+    document.getElementById("coin").addEventListener("click", () => {
       state.credits += 1;
       state.best = Math.max(state.best, state.credits);
       saveState();
       render("Coin eingeworfen", false);
     });
 
-    btnReset.addEventListener("click", () => {
+    document.getElementById("reset").addEventListener("click", () => {
       state = { credits: START_CREDITS, best: START_CREDITS };
       saveState();
       render("Zurueckgesetzt", false);
     });
 
-    btnLever.addEventListener("click", spin);
+    document.getElementById("lever").addEventListener("click", spin);
 
     setReels(0, 1, 4);
     render();
