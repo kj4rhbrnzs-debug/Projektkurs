@@ -1,0 +1,15 @@
+Deploy (Render) fuer oeffentlichen Link mit getrennten Spielstaenden:
+
+1) https://render.com -> New + -> Web Service
+2) Repo verbinden: kj4rhbrnzs-debug/Projektkurs
+3) Root Directory: web
+4) Environment: Docker
+5) Create Web Service
+
+Render baut und startet automatisch.
+Alle erhalten dann einen oeffentlichen Link wie:
+https://projektkurs-slot.onrender.com
+
+Wichtig:
+- Jede Person hat eigenen Spielstand (Session-Cookie).
+- Nicht nur Bildschirmuebertragung.
