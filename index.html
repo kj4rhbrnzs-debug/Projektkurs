@@ -100,7 +100,7 @@
 </head>
 <body>
   <main class="app">
-    <h1>PROJEKTKURS SLOTMASCHINE</h1>
+    <h1>SLOTMASCHINE</h1>
     <section class="stats">
       <div>Credits: <span id="credits">10</span></div>
       <div>Best: <span id="best">10</span></div>
@@ -115,19 +115,27 @@
     <div id="msg" class="msg">Viel Erfolg!</div>
 
     <section class="controls">
-      <button id="coin" class="coin">Coin +1</button>
-      <button id="lever" class="lever">Hebel</button>
+      <button id="coin" class="coin">C Coin</button>
+      <button id="lever" class="lever">L Lever</button>
       <button id="reset" class="reset">Reset</button>
     </section>
 
-    <p class="hint">Laeuft auf Handy, Tablet und Laptop direkt im Browser.</p>
+    <p class="hint">C Coin   L Lever   R Reset</p>
   </main>
 
   <script>
     const START_CREDITS = 10;
+    const CREDIT_PER_COIN = 1;
     const WIN_REWARD = 4;
     const WIN_CHANCE = 0.20;
-    const symbols = ["🍒", "🍋", "🍊", "🍇", "⭐", "🔔"];
+    const SPIN_DURATIONS = [3100, 3900, 4800];
+    const symbols = [
+      "slot_assets/sym_0.png",
+      "slot_assets/sym_1.png",
+      "slot_assets/sym_2.png",
+      "slot_assets/sym_3.png",
+      "slot_assets/sym_4.png"
+    ];
 
     const creditsEl = document.getElementById("credits");
     const bestEl = document.getElementById("best");
@@ -135,6 +143,8 @@
     const reels = [0, 1, 2].map(i => document.getElementById(`r${i}`));
 
     let spinning = false;
+    let winBlinkTimer = null;
+    let messageTimer = null;
     let state = loadState();
 
     function loadState() {
@@ -164,9 +174,9 @@
     }
 
     function setReels(a, b, c) {
-      reels[0].textContent = symbols[a];
-      reels[1].textContent = symbols[b];
-      reels[2].textContent = symbols[c];
+      reels[0].innerHTML = `<img src="${symbols[a]}" alt="Symbol" style="width:88%;height:88%;object-fit:contain;">`;
+      reels[1].innerHTML = `<img src="${symbols[b]}" alt="Symbol" style="width:88%;height:88%;object-fit:contain;">`;
+      reels[2].innerHTML = `<img src="${symbols[c]}" alt="Symbol" style="width:88%;height:88%;object-fit:contain;">`;
     }
 
     function sleep(ms) {
@@ -176,7 +186,9 @@
     async function spin() {
       if (spinning) return;
       if (state.credits <= 0) {
-        render("Keine Credits", false);
+        render("KEINE CREDITS", false);
+        if (messageTimer) clearTimeout(messageTimer);
+        messageTimer = setTimeout(() => render("", false), 1500);
         return;
       }
 
@@ -184,31 +196,66 @@
       document.getElementById("lever").disabled = true;
       state.credits -= 1;
       saveState();
-      render("Dreht...", false);
+      render("", false);
 
-      for (let i = 0; i < 18; i++) {
-        setReels(randomIndex(), randomIndex(), randomIndex());
-        await sleep(70 + i * 3);
-      }
-
-      let a = randomIndex();
-      let b = randomIndex();
-      let c = randomIndex();
-
+      const start = performance.now();
+      const finalReels = [randomIndex(), randomIndex(), randomIndex()];
       if (Math.random() < WIN_CHANCE) {
-        a = b = c = randomIndex();
+        const sym = randomIndex();
+        finalReels[0] = sym;
+        finalReels[1] = sym;
+        finalReels[2] = sym;
       }
 
-      setReels(a, b, c);
+      const current = [randomIndex(), randomIndex(), randomIndex()];
+      const lastStepTime = [0, 0, 0];
+      const minStep = [48, 52, 56];
+      const maxStep = [130, 140, 150];
 
-      if (a === b && b === c) {
+      while (true) {
+        const now = performance.now();
+        let runningAny = false;
+
+        for (let i = 0; i < 3; i++) {
+          const elapsed = now - start;
+          if (elapsed < SPIN_DURATIONS[i]) {
+            runningAny = true;
+            const progress = elapsed / SPIN_DURATIONS[i];
+            const stepInterval = minStep[i] + (maxStep[i] - minStep[i]) * Math.pow(progress, 1.7);
+            const elapsedSince = now - lastStepTime[i];
+            const steps = Math.floor(elapsedSince / stepInterval);
+            if (steps > 0) {
+              current[i] = (current[i] + steps) % symbols.length;
+              lastStepTime[i] += steps * stepInterval;
+            }
+          } else {
+            current[i] = finalReels[i];
+          }
+        }
+
+        setReels(current[0], current[1], current[2]);
+        if (!runningAny) break;
+        await sleep(4);
+      }
+
+      await sleep(500);
+
+      if (finalReels[0] === finalReels[1] && finalReels[1] === finalReels[2]) {
         state.credits += WIN_REWARD;
         state.best = Math.max(state.best, state.credits);
         saveState();
-        render("Gewonnen! +4", true);
+        render(" GEWONNEN! ", true);
+        if (winBlinkTimer) clearInterval(winBlinkTimer);
+        winBlinkTimer = setInterval(() => {
+          msgEl.style.visibility = msgEl.style.visibility === "hidden" ? "visible" : "hidden";
+        }, 300);
+        await sleep(4000);
+        clearInterval(winBlinkTimer);
+        winBlinkTimer = null;
+        msgEl.style.visibility = "visible";
+        render("", false);
       } else {
         saveState();
-        render("Leider knapp daneben", false);
       }
 
       document.getElementById("lever").disabled = false;
@@ -216,23 +263,27 @@
     }
 
     document.getElementById("coin").addEventListener("click", () => {
-      state.credits += 1;
-      state.best = Math.max(state.best, state.credits);
+      state.credits += CREDIT_PER_COIN;
       saveState();
-      render("Coin eingeworfen", false);
+      render("", false);
     });
 
     document.getElementById("reset").addEventListener("click", () => {
-      state = { credits: START_CREDITS, best: START_CREDITS };
+      state.credits = START_CREDITS;
       saveState();
-      render("Zurueckgesetzt", false);
+      render("", false);
     });
 
     document.getElementById("lever").addEventListener("click", spin);
+    document.addEventListener("keydown", (e) => {
+      const key = e.key.toLowerCase();
+      if (key === "c") document.getElementById("coin").click();
+      if (key === "l") document.getElementById("lever").click();
+      if (key === "r") document.getElementById("reset").click();
+    });
 
     setReels(0, 1, 4);
-    render();
+    render("", false);
   </script>
 </body>
 </html>
-
